@@ -1,0 +1,16 @@
+src/
+ ┣ components/
+ ┃ ┣ layout/
+ ┃ ┃ ┗ MainLayout.tsx     // 画面全体を左右に分割する大枠
+ ┃ ┣ control-panel/
+ ┃ ┃ ┗ ControlPanel.tsx   // 左側のパネル全体
+ ┃ ┣ canvas/
+ ┃ ┃ ┣ SeatingCanvas.tsx  // 右側のキャンバス全体（@dnd-kitのコンテキストを配置）
+ ┃ ┃ ┣ StudentCard.tsx    // ドラッグ可能な生徒カード
+ ┃ ┃ ┗ TeacherDesk.tsx    // 教卓コンポーネント
+ ┣ hooks/
+ ┃ ┗ useStudents.ts       // 生徒データや座席の配置状態を管理するカスタムフック
+ ┣ types/
+ ┃ ┗ index.ts             // Student型などの型定義
+ ┣ App.tsx
+ ┗ index.css              // グローバルなスタイル（Tailwind CSSなどを入れると便利です）

@@ -1,0 +1,4 @@
+/* src/index.css の中身をこれだけにする */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
