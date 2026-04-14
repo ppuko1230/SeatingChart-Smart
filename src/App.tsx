@@ -42,6 +42,11 @@ export default function App() {
   const [gapWide, setGapWide] = useState(30);
   const [frontMargin, setFrontMargin] = useState(100);
 
+  // 使い方
+  const [isHelpModalOpen, setIsHelpModalOpen] = useState(false);
+  // SNS用
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+
 // ★ 汎用化したレイアウト計算ロジック
   const calculateLayoutCoordinates = (count: number) => {
     // 全体の幅を計算（列数に合わせて隙間と通路を合算）
@@ -252,6 +257,24 @@ export default function App() {
     }
   };
 
+  const shareMessage = "【おすすめツール】ログイン不要で簡単！ドラッグ＆ドロップで座席表が作れる「座席表メーカー」を使ってみました。席替えがめちゃくちゃ楽になるので、他の先生もぜひ！";
+    const appUrl = window.location.href;
+
+    const shareOnX = () => {
+      const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareMessage)}&url=${encodeURIComponent(appUrl)}`;
+      window.open(url, '_blank');
+    };
+
+    const shareOnLine = () => {
+      const url = `https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(appUrl)}`;
+      window.open(url, '_blank');
+    };
+
+    const copyUrl = async () => {
+      await navigator.clipboard.writeText(appUrl);
+      alert("URLをコピーしました！先生同士のチャットなどで共有してください。");
+    };
+
   return (
     <DndContext onDragEnd={handleDragEnd}>
       <div className="flex h-screen w-full bg-gray-100 overflow-hidden font-sans text-gray-800">
@@ -436,6 +459,88 @@ export default function App() {
             })}
           </div>
         </main>
+        {/* === 使い方ボタン（シェアボタンの上に配置） === */}
+        <button
+          onClick={() => setIsHelpModalOpen(true)}
+          className="fixed bottom-24 right-6 w-14 h-14 bg-white text-indigo-600 rounded-full shadow-xl hover:bg-gray-50 transition-all flex items-center justify-center z-50 border-2 border-indigo-100 group"
+          title="使い方を見る"
+        >
+          <span className="text-2xl font-bold group-hover:scale-110 transition-transform">？</span>
+        </button>
+
+        {/* === 使い方モーダル === */}
+        {isHelpModalOpen && (
+          <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-[110] p-4" onClick={() => setIsHelpModalOpen(false)}>
+            <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden relative" onClick={(e) => e.stopPropagation()}>
+              
+              {/* 閉じるボタン */}
+              <button 
+                onClick={() => setIsHelpModalOpen(false)}
+                className="absolute top-4 right-4 bg-black/50 text-white w-8 h-8 rounded-full hover:bg-black transition-colors z-10"
+              >✕</button>
+
+              <div className="overflow-y-auto p-6 text-center">
+                <h3 className="text-2xl font-bold mb-4 text-gray-800">クイック使い方ガイド</h3>
+                
+                <div className="bg-white rounded-xl overflow-hidden shadow-inner border border-gray-200">
+                  <img 
+                    src="/guide.png" 
+                    alt="座席表メーカー 使い方ガイド" 
+                    className="w-full h-auto block"
+                    // 画像が読み込めなかった時のためのエラーハンドリング（任意）
+                    onError={(e) => (e.currentTarget.style.display = 'none')} 
+                  />
+                </div>
+
+                <button 
+                  onClick={() => setIsHelpModalOpen(false)}
+                  className="mt-6 px-8 py-3 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 transition-all"
+                >
+                  わかった！
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+        {/* === 追加：右下のフローティングシェアボタン === */}
+        <button
+          onClick={() => setIsShareModalOpen(true)}
+          className="fixed bottom-6 right-6 w-14 h-14 bg-indigo-600 text-white rounded-full shadow-2xl hover:bg-indigo-700 transition-all flex items-center justify-center z-50 group"
+          title="アプリをシェアする"
+        >
+          <span className="text-2xl group-hover:scale-110 transition-transform">📢</span>
+        </button>
+
+        {/* === 追加：シェア用モーダル === */}
+        {isShareModalOpen && (
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[100] p-4" onClick={() => setIsShareModalOpen(false)}>
+            <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-sm w-full relative animate-in fade-in zoom-in duration-200" onClick={(e) => e.stopPropagation()}>
+              <button 
+                onClick={() => setIsShareModalOpen(false)}
+                className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-xl"
+              >✕</button>
+              
+              <h3 className="text-xl font-bold text-center mb-2 text-gray-800">みんなに紹介する</h3>
+              <p className="text-sm text-gray-500 text-center mb-6">このアプリをシェアして、<br />周りの先生たちを応援しましょう！</p>
+              
+              <div className="flex flex-col gap-3">
+                <button onClick={shareOnX} className="flex items-center justify-center gap-3 w-full py-3 bg-black text-white rounded-xl font-bold hover:opacity-90 transition-opacity">
+                   𝕏 でポスト
+                </button>
+                <button onClick={shareOnLine} className="flex items-center justify-center gap-3 w-full py-3 bg-[#06C755] text-white rounded-xl font-bold hover:opacity-90 transition-opacity">
+                   LINEで送る
+                </button>
+                <button onClick={copyUrl} className="flex items-center justify-center gap-3 w-full py-3 bg-gray-100 text-gray-700 rounded-xl font-bold hover:bg-gray-200 transition-colors border border-gray-200">
+                   🔗 URLをコピー
+                </button>
+              </div>
+
+              <div className="mt-6 pt-6 border-t border-gray-100 text-[10px] text-gray-400 text-center leading-relaxed">
+                ※入力された生徒名簿などのデータは<br />サーバーに送信されないので、安心して紹介いただけます。
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </DndContext>
   );
