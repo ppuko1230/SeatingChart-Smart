@@ -2,6 +2,15 @@
 import * as XLSX from 'xlsx';
 import type { Student } from '../../types';
 
+type ImportedStudentRow = {
+  出席番号?: number;
+  No?: number;
+  氏名?: string;
+  名前?: string;
+  フリガナ?: string;
+  性別?: string;
+};
+
 type Props = {
   onDataLoaded: (students: Student[]) => void;
 };
@@ -19,7 +28,7 @@ export const FileUploader = ({ onDataLoaded }: Props) => {
       const sheet = workbook.Sheets[sheetName];
       
       // シートをJSON形式（配列）に変換
-      const jsonData = XLSX.utils.sheet_to_json<any>(sheet);
+      const jsonData = XLSX.utils.sheet_to_json<ImportedStudentRow>(sheet);
 
       // アプリ用のStudent型にマッピング
       const mappedStudents: Student[] = jsonData.map((row, index) => ({
